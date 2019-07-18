@@ -1,0 +1,34 @@
+pig
+
+
+grunt> olympic = load('olympic/input/olympix_data.csv') using PigStorage('\t);
+
+	dump olympic
+
+	Country_final = foreach olympic generate $2 as Country, $9 as total_medals;
+
+        dump count_final
+
+        grouped = group Country_final by Country;
+
+        dump grouped
+
+	final_result = foreach grouped generate group, COUNT(Country_final.total_medals) as f_count;
+
+	sort = order final_result by f_count desc;
+        dump  sort
+
+        final_count = limit sort 10;
+
+        dump final_count
+
+        store final_count into '/olympic/output/use-case';         
+
+	
+	Country_final = foreach olympic generate $2 as Country, $5 as sport, $9 as total_medals;
+
+ 	athletes_filter = FILTER Country_final by sport=='Swimming';
+	dump athletes_filter;
+	 fin_grouped = group athletes_filter by Country;
+	final_result = foreach fin_grouped generate group, COUNT(athletes.filter) as f_count;
+		sort = order final_result by f_count desc;
